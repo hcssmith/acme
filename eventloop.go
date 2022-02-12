@@ -3,6 +3,7 @@ package acme
 import (
 	"strings"
 	"strconv"
+	"fmt"
 )
 
 const (
@@ -50,6 +51,9 @@ type EvCommand struct {
 type Evm map[string]func(*Win, Arg)
 
 func parse_event(arr []byte) (ev Event) {
+	if len(arr) <= 2 {
+		return
+	}
 	switch arr[0] {
 		case 'E':
 			ev.Origin = E
@@ -80,6 +84,9 @@ func parse_event(arr []byte) (ev Event) {
 	}
 	arr2 := string(arr[2:])
 	spl := strings.Split(arr2, " ")
+	if len(spl) < 4 {
+		return
+	}
 	ev.CAddr1, _ = strconv.Atoi(spl[0])
 	ev.CAddr2, _ = strconv.Atoi(spl[1])
 	ev.Flag, _ = strconv.Atoi(spl[2])
@@ -96,6 +103,7 @@ func (self *Win)Event_Loop(mp Evm) {
 	for {
 		var ev1, ev2, ev3, ev4 Event
 		var evnum int
+		var tline []byte
 		var c EvCommand
 		c.W = self
 		line, _, _ := r.ReadLine()
@@ -112,8 +120,24 @@ func (self *Win)Event_Loop(mp Evm) {
 		if ev1.Flag&8 != 0 {
 			line3, _, _ := r.ReadLine()
 			ev3 = parse_event(line3)
-			line4, _, _ := r.ReadLine()
-			ev4 = parse_event(line4)
+			fmt.Printf("%s", ev3)
+			if ev3.NumChars != len(ev3.Text) {
+				for {
+					tline, _, _ = r.ReadLine()
+					if len(tline) < 3 {
+						ev3.Text = ev3.Text + "\n" + string(tline)
+						continue
+					}
+					if tline[0] == 'M' && tline[2] == '0' && tline[3] == ' ' {
+						break
+					}
+					ev3.Text = ev3.Text + "\n" + string(tline)
+				}
+			} else {
+				tline, _, _ = r.ReadLine()
+			}
+
+			ev4 = parse_event(tline)
 			evnum = 4
 		}
 

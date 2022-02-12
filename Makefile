@@ -1,8 +1,5 @@
 
-all: example
-
-
-example:
+all:
 	go build cmd/example.go
 
 clean:

@@ -11,6 +11,7 @@ func main() {
 	fm := Evm{
 		"test1":test1,
 		"Close":Close,
+		"textarg":textarg,
 	}
 
 	a := NewAcme()
@@ -20,7 +21,7 @@ func main() {
 	i := a.Create_win("Notification")
 	w, _ := a.GetWindow(i)
 
-	w.Set_Tags("Refresh Close")
+	w.Set_Tags("Refresh Close textarg")
 	w.Set_Text(text)
 
 
@@ -31,6 +32,10 @@ func main() {
 
 func test1(w *Win, a Arg) {
 	w.Set_Text("How about this instead")
+}
+
+func textarg(w *Win, a Arg) {
+	w.Set_Text(a.Arg)
 }
 
 func Close(w *Win, a Arg) {
