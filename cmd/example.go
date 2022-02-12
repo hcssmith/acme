@@ -1,7 +1,7 @@
 package main
 
 import (
-	. "acme"
+	. "github.com/hcssmith/acme"
 	"os"
 )
 
